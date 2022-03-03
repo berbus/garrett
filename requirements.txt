@@ -1,0 +1,4 @@
+django==4.*
+djangorestframework==3.*
+google-auth==2.*
+jira==3.*
