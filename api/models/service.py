@@ -21,3 +21,9 @@ class Service(models.Model):
 
     confluence_parent_id = models.IntegerField(null=True)
     confluence_space = models.CharField(max_length=64, null=True)
+
+    def __repr__(self):
+        return f'Service<{self.oid}, {self.name}>'
+
+    def __str__(self):
+        return f'Service<{self.oid}, {self.name}>'

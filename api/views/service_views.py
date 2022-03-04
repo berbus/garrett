@@ -16,3 +16,9 @@ class ServiceViewSet(viewsets.ModelViewSet):
         if self.action in ('list', 'retrieve'):
             permission_classes = (IsAuthenticated, )
         return [permission() for permission in permission_classes]
+
+    def get_serializer_class(self):
+        serializer_class = self.serializer_class
+        if self.action == 'retrieve':
+            serializer_class = serializers.ServiceDetailSerializer
+        return serializer_class
