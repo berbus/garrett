@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 import api.models as models
 
-from .exercise_serializer import ExerciseSerializer
+from .exercise_detail_serializer import ExerciseDetailSerializer
 
 
 class ServiceDetailSerializer(serializers.ModelSerializer):
@@ -14,5 +14,9 @@ class ServiceDetailSerializer(serializers.ModelSerializer):
     exercises = serializers.SerializerMethodField()
 
     def get_exercises(self, service):
+        res = []
         exercises = models.Exercise.objects.filter(service=service).order_by('-creation_date')
-        return ExerciseSerializer(exercises, many=True).data
+        for exercise in exercises:
+            res.append(ExerciseDetailSerializer(exercise).data)
+
+        return res
