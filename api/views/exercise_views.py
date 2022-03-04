@@ -21,6 +21,12 @@ class ExerciseViewSet(viewsets.ModelViewSet):
             permission_classes = (IsAuthenticated, )
         return [permission() for permission in permission_classes]
 
+    def get_serializer_class(self):
+        serializer_class = self.serializer_class
+        if self.action == 'retrieve':
+            serializer_class = serializers.ExerciseDetailSerializer
+        return serializer_class
+
     def perform_create(self, serializer):
         template = serializer.validated_data.get('template')
         exercise = serializer.save()
@@ -32,15 +38,3 @@ class ExerciseViewSet(viewsets.ModelViewSet):
         response_data = serializer.data
         response_data['service_name'] = exercise.service.name
         return Response(serializer.data)
-
-    def retrieve(self, request, pk=None):
-        exercise = get_object_or_404(self.get_queryset(), pk=pk)
-        serializerClass = self.get_serializer_class()
-        serializer = serializerClass(exercise)
-        response_data = serializer.data
-
-        if request.query_params.get('readable'):
-            service = models.Service.objects.get(pk=response_data['service'])
-            response_data['service_name'] = service.name
-
-        return Response(response_data)

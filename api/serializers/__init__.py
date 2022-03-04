@@ -1,4 +1,5 @@
 from .exercise_serializer import ExerciseSerializer
+from .exercise_detail_serializer import ExerciseDetailSerializer
 from .finding_serializer import FindingSerializer
 from .group_serializer import GroupSerializer
 from .profile_serializer import ProfileSerializer
