@@ -1,4 +1,5 @@
 import json
+import time
 
 from django.contrib.auth import login
 from django.contrib.auth import logout
@@ -38,11 +39,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=data, many=False)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
-            try:
-                profile = models.Profile(user=user, picture=idinfo.get('picture'))
-            except Exception as e:
-                logger.error(type(e))
-                raise
+            profile = models.Profile(user=user, picture=idinfo.get('picture'))
             profile.save()
 
         return user
@@ -68,7 +65,12 @@ class UserViewSet(viewsets.ModelViewSet):
         res = None
 
         if token:
-            idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+            try:
+                idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+            except ValueError:
+                time.sleep(1)   # Server time one second before Google's cause crash otherwise
+                idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+
             email = idinfo.get('email')
             try:
                 user = User.objects.get(email__exact=email)
