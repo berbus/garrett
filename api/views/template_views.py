@@ -1,13 +1,12 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import IsAdminUser
 
 import api.models as models
 import api.serializers as serializers
 
 
 class TemplateViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated, IsAdminUser)
+    permission_classes = (IsAuthenticated, )
     queryset = models.Template.objects.all()
     serializer_class = serializers.TemplateSerializer
 

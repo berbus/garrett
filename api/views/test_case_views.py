@@ -3,7 +3,6 @@ import uuid
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
 import api.models as models
@@ -13,7 +12,7 @@ import api.serializers as serializers
 class TestCaseViewSet(viewsets.ModelViewSet):
     queryset = models.TestCase.objects.all()
     serializer_class = serializers.TestCaseSerializer
-    permission_classes = (IsAuthenticated, IsAdminUser)
+    permission_classes = (IsAuthenticated, )
 
     def get_permissions(self):
         permission_classes = self.permission_classes

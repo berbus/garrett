@@ -14,7 +14,6 @@ from rest_framework.decorators import action
 from rest_framework.generics import RetrieveAPIView
 from google.oauth2 import id_token
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import IsAdminUser
 from google.auth.transport import requests
 
 import api.models as models
@@ -45,7 +44,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return user
 
     def get_permissions(self):
-        permission_classes = (IsAuthenticated, IsAdminUser)
+        permission_classes = (IsAuthenticated, )
         if self.action in ('me', 'logout'):
             permission_classes = (IsAuthenticated, )
         elif self.action == 'login':
