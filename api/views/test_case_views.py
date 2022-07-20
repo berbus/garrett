@@ -2,6 +2,7 @@ import uuid
 
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -26,14 +27,27 @@ class TestCaseViewSet(viewsets.ModelViewSet):
 
         if exercise_id:
             try:
-                uuid_obj = uuid.UUID(exercise_id)
+                _ = uuid.UUID(exercise_id)
             except ValueError:
-                print(f'Bad value for exercise ID')
+                print('Bad value for exercise ID')
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-            queryset = models.TestCase.objects.filter(
-                exercise=exercise_id).order_by('requirement__readable_id')
+            queryset = models.TestCase.objects.filter(exercise=exercise_id).order_by(
+                'requirement__owasp_section', 'requirement__readable_id')
 
         serializer = self.get_serializer(queryset, many=True)
         response_data = serializer.data
+        print([x['requirement']['owasp_section'] for x in serializer.data])
+
+        return Response(response_data)
+
+    @action(methods=['PATCH'], detail=False)
+    def bulk_update(self, request):
+        test_ids = request.data.get('test_ids')
+        new_data = request.data.get('new_data')
+
+        # TODO - Is unsanitised data bad?
+        queryset = self.get_queryset().filter(pk__in=test_ids)
+        queryset.update(**new_data)
+        response_data = self.get_serializer(queryset, many=True).data
 
         return Response(response_data)
