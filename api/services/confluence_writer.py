@@ -105,7 +105,7 @@ def test_case_to_html(test_case):
     if test_case.description:
         res_html += f'<td>{test_case.description}</td>'
     else:
-        res_html += f'<td>-</td>'
+        res_html += '<td>-</td>'
     res_html += '</tr>'
 
     return res_html

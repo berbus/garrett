@@ -26,9 +26,9 @@ class FindingViewSet(viewsets.ModelViewSet):
 
         if exercise_id:
             try:
-                uuid_obj = uuid.UUID(exercise_id)
+                _ = uuid.UUID(exercise_id)
             except ValueError:
-                print(f'Bad value for exercise ID')
+                print('Bad value for exercise ID')
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             queryset = models.Finding.objects.filter(
                 exercise=exercise_id).order_by('creation_date')
