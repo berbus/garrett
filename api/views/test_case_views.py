@@ -36,7 +36,6 @@ class TestCaseViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         response_data = serializer.data
-        print([x['requirement']['owasp_section'] for x in serializer.data])
 
         return Response(response_data)
 
