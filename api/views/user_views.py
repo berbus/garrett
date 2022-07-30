@@ -1,4 +1,3 @@
-import json
 import time
 
 from django.contrib.auth import login
@@ -8,10 +7,8 @@ from django.contrib.auth.models import User
 
 # from rest_framework import permissions
 from rest_framework import viewsets
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.generics import RetrieveAPIView
 from google.oauth2 import id_token
 from rest_framework.permissions import IsAuthenticated
 from google.auth.transport import requests
@@ -56,7 +53,6 @@ class UserViewSet(viewsets.ModelViewSet):
         logout(request)
         return Response()
 
-
     @action(methods=['POST'], detail=False)
     def login(self, request):
         token = request.POST.get('credential')
@@ -67,7 +63,7 @@ class UserViewSet(viewsets.ModelViewSet):
             try:
                 idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
             except ValueError:
-                time.sleep(1)   # Server time one second before Google's cause crash otherwise
+                time.sleep(1)    # Server time one second before Google's cause crash otherwise
                 idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
 
             email = idinfo.get('email')
