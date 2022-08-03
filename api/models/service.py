@@ -13,7 +13,7 @@ class Service(models.Model):
         TESTING = 'TESTING'
 
     oid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, unique=True)
     creation_date = models.DateField(default=datetime.date.today)
     status = models.CharField(max_length=20,
                               choices=ServiceStatus.choices,

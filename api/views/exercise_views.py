@@ -1,5 +1,3 @@
-from django.shortcuts import get_object_or_404
-
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -28,7 +26,12 @@ class ExerciseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         template = serializer.validated_data.get('template')
+        jira_issue = serializer.validated_data.get('jira_issue')
         exercise = serializer.save()
+
+        if jira_issue:
+            services.jira.update_jira_issue(jira_issue,
+                                            models.JiraTransition.GarrettActions.CREATE_TEST)
 
         for req in template.requirements.all():
             tc = models.TestCase(exercise=exercise, requirement=req)
@@ -36,4 +39,13 @@ class ExerciseViewSet(viewsets.ModelViewSet):
 
         response_data = serializer.data
         response_data['service_name'] = exercise.service.name
+        return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        serializer.save()
+        if serializer.validated_data.get('finished') and serializer.data.get('jira_issue'):
+            jira_id = serializer.data.get('jira_issue')
+            jira_issue = models.JiraIssue.objects.get(pk=jira_id)
+            services.jira.update_jira_issue(jira_issue,
+                                            models.JiraTransition.GarrettActions.COMPLETE_TEST)
         return Response(serializer.data)
