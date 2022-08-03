@@ -5,6 +5,7 @@ from django.db import models
 
 from .service import Service
 from .template import Template
+from .jira_issue import JiraIssue
 
 
 class Exercise(models.Model):
@@ -15,6 +16,7 @@ class Exercise(models.Model):
 
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     template = models.ForeignKey(Template, on_delete=models.CASCADE)
+    jira_issue = models.OneToOneField(JiraIssue, on_delete=models.CASCADE, null=True)
 
     def __repr__(self):
         return f'Exercise<{self.title}, {self.oid}>'

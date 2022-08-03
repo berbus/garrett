@@ -9,8 +9,6 @@ class Requirement(models.Model):
     description = models.CharField(max_length=512, blank=True)
 
     owasp_level = models.IntegerField(default=0)
-
-    # OWASP details
     owasp_section = models.IntegerField(default=0)
 
     def __repr__(self):
