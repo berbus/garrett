@@ -1,4 +1,6 @@
 import os
+import time
+import threading
 
 import jira
 
@@ -12,7 +14,20 @@ class JiraWrapper(object):
     PROJECT = os.getenv('ATLASSIAN_PROJECT')
     INITIAL_ISSUE_STATE = os.getenv('JIRA_INITIAL_ISSUE_STATE', 'done').lower()
     SERVICE_FIELD = os.getenv('JIRA_SERVICE_FIELD', 'components')
+    UPDATE_TIMEOUT = os.getenv('JIRA_UPDATE_TIMEOUT', 60)
     jc = jira.JIRA(SITE, basic_auth=(EMAIL, TOKEN))
+
+    def __init__(self):
+        if type(self.UPDATE_TIMEOUT) is str:
+            self.UPDATE_TIMEOUT = int(self.UPDATE_TIMEOUT)
+        self.scheduler = threading.Thread(target=self.run_scheduler)
+        self.scheduler.start()
+
+    def run_scheduler(self):
+        while True:
+            print('Updating all issues in Jira DB')
+            self.update_jira_issues_db(only_open=False)
+            time.sleep(self.UPDATE_TIMEOUT)
 
     def get_all_open_issues(self):
         return self.jc.search_issues(f'project={self.PROJECT}'
