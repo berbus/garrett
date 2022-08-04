@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import threading
 
@@ -21,7 +22,9 @@ class JiraWrapper(object):
         if type(self.UPDATE_TIMEOUT) is str:
             self.UPDATE_TIMEOUT = int(self.UPDATE_TIMEOUT)
         self.scheduler = threading.Thread(target=self.run_scheduler)
-        self.scheduler.start()
+
+        if sys.argv[1] == 'runserver':  # So the thread does not run with migrations
+            self.scheduler.start()
 
     def run_scheduler(self):
         while True:
