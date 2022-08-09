@@ -3,8 +3,8 @@ from rest_framework import serializers
 import api.models as models
 
 
-class ExerciseSerializer(serializers.ModelSerializer):
+class ThreatModelSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.Exercise
+        model = models.ThreatModel
         fields = '__all__'

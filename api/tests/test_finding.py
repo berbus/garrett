@@ -15,11 +15,11 @@ class BasicFindingTestCase(APITestCase):
         self.service.save()
         aux_template = models.Template.objects.first()
         aux_requirement = models.Requirement.objects.first()
-        self.exercise = models.Exercise(title='Test exercise',
+        self.review = models.Review(title='Test review',
                                         service=self.service,
                                         template=aux_template)
-        self.exercise.save()
-        self.test_case = models.TestCase(exercise=self.exercise, requirement=aux_requirement)
+        self.review.save()
+        self.test_case = models.TestCase(review=self.review, requirement=aux_requirement)
         self.test_case.save()
 
         finding_name = test_utils.get_random_name()
@@ -27,7 +27,7 @@ class BasicFindingTestCase(APITestCase):
         create_data = {
             'title': finding_name,
             'test_case': self.test_case.oid,
-            'exercise': self.exercise.oid
+            'review': self.review.oid
         }
 
         test_utils.login_client(self.client, admin=True)
@@ -61,7 +61,7 @@ class BasicFindingTestCase(APITestCase):
         create_data = {
             'title': finding_name,
             'test_case': self.test_case.oid,
-            'exercise': self.exercise.oid
+            'review': self.review.oid
         }
         update_data = {'title': f'{finding_name}_updated'}
 
@@ -92,7 +92,7 @@ class BasicFindingTestCase(APITestCase):
         create_data = {
             'title': finding_name,
             'test_case': self.test_case.oid,
-            'exercise': self.exercise.oid
+            'review': self.review.oid
         }
         update_data = {'title': f'{finding_name}_updated'}
 
@@ -119,5 +119,5 @@ class BasicFindingTestCase(APITestCase):
 
     def tearDown(self):
         self.service.delete()
-        self.exercise.delete()
+        self.review.delete()
         self.test_case.delete()

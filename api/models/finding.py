@@ -4,7 +4,7 @@ import uuid
 from django.db import models
 
 from .test_case import TestCase
-from .exercise import Exercise
+from .security_test import SecurityTest
 
 
 class Finding(models.Model):
@@ -25,12 +25,12 @@ class Finding(models.Model):
     description = models.TextField(default='', blank=True)
     evidence = models.TextField(default='', blank=True)
     creation_date = models.DateField(default=datetime.date.today)
-    impact = models.CharField(max_length=13,
-                              choices=Impact.choices,
-                              default=Impact.INFO)
+    impact = models.CharField(max_length=13, choices=Impact.choices, default=Impact.INFO)
     status = models.CharField(max_length=7,
                               choices=FindingStatus.choices,
                               default=FindingStatus.PENDING)
 
     test_case = models.ForeignKey(TestCase, on_delete=models.CASCADE, related_name='findings')
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE, related_name='findings')
+    security_test = models.ForeignKey(SecurityTest,
+                                      on_delete=models.CASCADE,
+                                      related_name='findings')
