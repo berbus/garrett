@@ -21,17 +21,17 @@ class FindingViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def list(self, request, pk=None):
-        exercise_id = request.query_params.get('exercise')
+        security_test = request.query_params.get('security_test')
         queryset = self.get_queryset()
 
-        if exercise_id:
+        if security_test:
             try:
-                _ = uuid.UUID(exercise_id)
+                _ = uuid.UUID(security_test)
             except ValueError:
-                print('Bad value for exercise ID')
+                print('Bad value for review ID')
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             queryset = models.Finding.objects.filter(
-                exercise=exercise_id).order_by('creation_date')
+                security_test=security_test).order_by('creation_date')
 
         serializer = self.get_serializer(queryset, many=True)
         response_data = serializer.data

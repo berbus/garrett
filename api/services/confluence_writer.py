@@ -16,20 +16,20 @@ def get_auth_data():
     return ('aldelrio@protonmail.com', get_api_key())
 
 
-def write_confluence_page(exercise, space_id, parent_page_id):
-    html = exercise_to_html(exercise)
+def write_confluence_page(review, space_id, parent_page_id):
+    html = review_to_html(review)
     headers = {'content-type': 'application/json'}
     auth = get_auth_data()
     data = {
         'type': 'page',
-        'title': exercise.title,
+        'title': review.title,
         'ancestors': [{'id': parent_page_id}],
         'space': {
             'key': space_id,
         },
         'body': {
             'storage': {
-                'value': exercise_to_html(exercise),
+                'value': review_to_html(review),
                 'representation': 'storage'
             }
         }
@@ -38,18 +38,18 @@ def write_confluence_page(exercise, space_id, parent_page_id):
     _ = requests.post(CONFLUENCE_URL, auth=auth, json=data, headers=headers)
 
 
-def exercise_to_html(exercise):
+def review_to_html(review):
     res_html = ''
-    res_html += (f'<h1>{exercise.title}</h1>')
+    res_html += (f'<h1>{review.title}</h1>')
 
-    findings = models.Finding.objects.filter(exercise=exercise.oid).order_by('creation_date')
+    findings = models.Finding.objects.filter(review=review.oid).order_by('creation_date')
     if findings:
         res_html += (f'<h2>Findings</h2>')
         for idx, finding in enumerate(findings):
             res_html += finding_to_html(finding, idx)
 
     test_cases = models.TestCase.objects.filter(
-        exercise=exercise.oid).order_by('requirement__readable_id')
+        review=review.oid).order_by('requirement__readable_id')
     res_html += (f'<h2>Test cases</h2>')
     res_html += (
         '<table><thead><tr><td>Requirement</td><td>Status</td><td>Description</td></tr></thead>')

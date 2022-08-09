@@ -3,7 +3,7 @@ import uuid
 
 from django.db import models
 
-from .exercise import Exercise
+from .security_test import SecurityTest
 from .requirement import Requirement
 
 
@@ -21,10 +21,9 @@ class TestCase(models.Model):
                               choices=TestStatus.choices,
                               default=TestStatus.PENDING)
 
-    exercise = models.ForeignKey(Exercise,
-                                 on_delete=models.CASCADE,
-                                 related_name='tests',
-                                 blank=True)
+    security_test = models.ForeignKey(SecurityTest,
+                                      on_delete=models.CASCADE,
+                                      related_name='tests')
     requirement = models.ForeignKey(Requirement, on_delete=models.CASCADE)
 
     def __repr__(self):

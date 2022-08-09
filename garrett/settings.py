@@ -44,8 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
-    'rest_framework',
-    'django_extensions' # TODO -delete
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

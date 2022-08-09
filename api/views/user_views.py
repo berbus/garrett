@@ -69,7 +69,7 @@ class UserViewSet(viewsets.ModelViewSet):
             email = idinfo.get('email')
             try:
                 user = User.objects.get(email__exact=email)
-            except User.DoesNotExist as e:
+            except User.DoesNotExist:
                 print(f'User with email {email} not found')
                 user = self.create_new_user_from_sso(idinfo)
 

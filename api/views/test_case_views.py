@@ -22,16 +22,16 @@ class TestCaseViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def list(self, request, pk=None):
-        exercise_id = request.query_params.get('exercise')
+        security_test_id = request.query_params.get('security_test')
         queryset = self.get_queryset()
 
-        if exercise_id:
+        if security_test_id:
             try:
-                _ = uuid.UUID(exercise_id)
+                _ = uuid.UUID(security_test_id)
             except ValueError:
-                print('Bad value for exercise ID')
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            queryset = models.TestCase.objects.filter(exercise=exercise_id).order_by(
+                print('Bad value for SecurityTest ID')
+                return Response(status=status.HTTP_400_BAD_REQUEST)    # Please no
+            queryset = models.TestCase.objects.filter(security_test=security_test_id).order_by(
                 'requirement__owasp_section', 'requirement__readable_id')
 
         serializer = self.get_serializer(queryset, many=True)

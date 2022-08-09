@@ -2,8 +2,6 @@ from rest_framework import serializers
 
 import api.models as models
 
-from .exercise_detail_serializer import ExerciseDetailSerializer
-
 
 class ServiceDetailSerializer(serializers.ModelSerializer):
 
@@ -11,12 +9,24 @@ class ServiceDetailSerializer(serializers.ModelSerializer):
         model = models.Service
         fields = '__all__'
 
-    exercises = serializers.SerializerMethodField()
+    reviews = serializers.SerializerMethodField()
 
-    def get_exercises(self, service):
+    def get_reviews(self, service):
         res = []
-        exercises = models.Exercise.objects.filter(service=service).order_by('-creation_date')
-        for exercise in exercises:
-            res.append(ExerciseDetailSerializer(exercise).data)
+        reviews = models.Review.objects.filter(services=service).order_by('-creation_date')
+        for review in reviews:
+            review_data = {
+                'oid': review.oid,
+                'title': review.title,
+                'creation_date': review.creation_date,
+                'completion_date': review.completion_date
+            }
+            if review.jira_issue:
+                review_data['jira_issue'] = {
+                    'oid': review.jira_issue.oid,
+                    'jira_id': review.jira_issue.jira_id,
+                    'status': review.jira_issue.status
+                }
+            res.append(review_data)
 
         return res

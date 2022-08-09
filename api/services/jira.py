@@ -23,7 +23,9 @@ class JiraWrapper(object):
             self.UPDATE_TIMEOUT = int(self.UPDATE_TIMEOUT)
         self.scheduler = threading.Thread(target=self.run_scheduler)
 
-        if sys.argv[1] == 'runserver':  # So the thread does not run with migrations
+        # So the thread does not run with migrations
+        if sys.argv[1] == 'runserver' and not os.getenv('DJ_DEBUG'):
+            print('Launching Jira scheduler')
             self.scheduler.start()
 
     def run_scheduler(self):
@@ -43,12 +45,14 @@ class JiraWrapper(object):
                                      f'&component IS NOT empty')
 
     def update_jira_issues_db(self, only_open=True):
+        print(f'Updating Jira issues: {only_open}')
         if only_open:
             issues = self.get_all_open_issues()
         else:
             issues = self.get_all_issues()
 
         for issue in issues:
+            print(f'Updating {issue}')
             db_issue = models.JiraIssue.objects.filter(jira_id=issue.key)
             if db_issue.exists():
                 db_issue = db_issue.first()
@@ -64,7 +68,7 @@ class JiraWrapper(object):
                 services = models.Service.objects.filter(name__in=components)
                 issue_obj.services.set(services)
 
-    def update_jira_issue(self, issue, garrett_action):
+    def transition_jira_issue(self, issue, garrett_action):
         jira_transition = models.JiraTransition.objects.filter(
             garrett_action=garrett_action).first()
 
@@ -78,6 +82,8 @@ class JiraWrapper(object):
                 issue.save()
             else:
                 print(f'Invalid Jira transition: {jira_issue} -> {transition_id}')
+        else:
+            print(f'No transition defined for Garret Action: {garrett_action}')
 
     def find_transition_by_name(self, issue, name):
         transition_id = self.jc.find_transitionid_by_name(issue, name)
@@ -94,3 +100,6 @@ class JiraWrapper(object):
         statuses = self.jc.statuses()
         _ = [res.append(s.name.upper()) for s in statuses]
         return res
+
+    def get_url_for_issue(self, issue):
+        return f'{self.SITE}/browse/{issue.jira_id}'
