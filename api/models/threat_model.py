@@ -13,7 +13,7 @@ class ThreatModel(models.Model):
     creation_date = models.DateField(default=datetime.date.today)
     completion_date = models.DateField(default=None, null=True)
 
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    services = models.ManyToManyField(Service, blank=True)
     review = models.ForeignKey(Review, on_delete=models.CASCADE, null=True)
 
     def __repr__(self):

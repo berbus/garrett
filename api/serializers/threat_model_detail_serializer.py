@@ -9,11 +9,14 @@ class ThreatModelDetailSerializer(serializers.ModelSerializer):
         model = models.ThreatModel
         fields = '__all__'
 
-    service = serializers.SerializerMethodField(read_only=True)
+    services = serializers.SerializerMethodField(read_only=True)
     review = serializers.SerializerMethodField(read_only=True)
 
-    def get_service(self, threat_model):
-        return {'name': threat_model.service.name, 'oid': threat_model.service.oid}
+    def get_services(self, threat_model):
+        res = []
+        for service in threat_model.services.all():
+            res.append({'name': service.name, 'oid': service.oid})
+        return res
 
     def get_review(self, threat_model):
         if threat_model.review is None:

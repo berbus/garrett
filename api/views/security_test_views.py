@@ -39,8 +39,6 @@ class SecurityTestViewSet(viewsets.ModelViewSet):
             tc = models.TestCase(security_test=security_test, requirement=req)
             tc.save()
 
-        response_data = serializer.data
-        response_data['service_name'] = security_test.service.name
         return Response(serializer.data)
 
     @action(methods=['GET'], detail=True)

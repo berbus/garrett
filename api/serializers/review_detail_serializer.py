@@ -39,7 +39,6 @@ class ReviewDetailSerializer(serializers.ModelSerializer):
                 'oid': str(security_test.template.oid),
                 'name': security_test.template.name,
             }
-            t['service'] = security_test.service.name
             res.append(t)
         return res
 
@@ -53,7 +52,6 @@ class ReviewDetailSerializer(serializers.ModelSerializer):
             t['title'] = threat_model.title
             t['creation_date'] = threat_model.creation_date
             t['completion_date'] = threat_model.completion_date
-            t['service'] = threat_model.service.name
             res.append(t)
         return res
 

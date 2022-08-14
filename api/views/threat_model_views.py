@@ -35,8 +35,6 @@ class ThreatModelViewSet(viewsets.ModelViewSet):
                 threat_model.review.jira_issue,
                 models.JiraTransition.GarrettActions.CREATE_THREAT_MODEL)
 
-        response_data = serializer.data
-        response_data['service_name'] = threat_model.service.name
         return Response(serializer.data)
 
     @action(methods=['GET'], detail=True)
