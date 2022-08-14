@@ -9,12 +9,15 @@ class SecurityTestDetailSerializer(serializers.ModelSerializer):
         model = models.SecurityTest
         fields = '__all__'
 
-    service = serializers.SerializerMethodField(read_only=True)
+    services = serializers.SerializerMethodField(read_only=True)
     template = serializers.SerializerMethodField(read_only=True)
     review = serializers.SerializerMethodField(read_only=True)
 
-    def get_service(self, security_test):
-        return {'name': security_test.service.name, 'oid': security_test.service.oid}
+    def get_services(self, security_test):
+        res = []
+        for service in security_test.services.all():
+            res.append({'name': service.name, 'oid': service.oid})
+        return res
 
     def get_template(self, security_test):
         return {'name': security_test.template.name, 'oid': security_test.template.oid}

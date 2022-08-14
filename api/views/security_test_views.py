@@ -32,15 +32,13 @@ class SecurityTestViewSet(viewsets.ModelViewSet):
         security_test = serializer.save()
 
         if security_test.review and security_test.review.jira_issue:
-            services.jira.transtion_jira_issue(security_test.review.jira_issue,
-                                               models.JiraTransition.GarrettActions.CREATE_TEST)
+            services.jira.transition_jira_issue(security_test.review.jira_issue,
+                                                models.JiraTransition.GarrettActions.CREATE_TEST)
 
         for req in template.requirements.all():
             tc = models.TestCase(security_test=security_test, requirement=req)
             tc.save()
 
-        response_data = serializer.data
-        response_data['service_name'] = security_test.service.name
         return Response(serializer.data)
 
     @action(methods=['GET'], detail=True)
@@ -51,7 +49,7 @@ class SecurityTestViewSet(viewsets.ModelViewSet):
             security_test.completion_date = datetime.datetime.now().date()
             security_test.save()
             if security_test.review and security_test.review.jira_issue:
-                services.jira.transtion_jira_issue(
+                services.jira.transition_jira_issue(
                     security_test.review.jira_issue,
                     models.JiraTransition.GarrettActions.COMPLETE_TEST)
 

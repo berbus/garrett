@@ -31,12 +31,10 @@ class ThreatModelViewSet(viewsets.ModelViewSet):
         threat_model = serializer.save()
 
         if threat_model.review and threat_model.review.jira_issue:
-            services.jira.transtion_jira_issue(
+            services.jira.transition_jira_issue(
                 threat_model.review.jira_issue,
                 models.JiraTransition.GarrettActions.CREATE_THREAT_MODEL)
 
-        response_data = serializer.data
-        response_data['service_name'] = threat_model.service.name
         return Response(serializer.data)
 
     @action(methods=['GET'], detail=True)
@@ -47,7 +45,7 @@ class ThreatModelViewSet(viewsets.ModelViewSet):
             threat_model.completion_date = datetime.datetime.now().date()
             threat_model.save()
             if threat_model.review and threat_model.review.jira_issue:
-                services.jira.transtion_jira_issue(
+                services.jira.transition_jira_issue(
                     threat_model.review.jira_issue,
                     models.JiraTransition.GarrettActions.COMPLETE_THREAT_MODEL)
 

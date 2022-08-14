@@ -44,7 +44,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
             review.completion_date = datetime.datetime.now().date()
             review.save()
             if review.jira_issue:
-                services.jira.transtion_jira_issue(
+                services.jira.transition_jira_issue(
                     review.jira_issue, models.JiraTransition.GarrettActions.COMPLETE_REVIEW)
 
         serializer_class = self.get_serializer_class()
