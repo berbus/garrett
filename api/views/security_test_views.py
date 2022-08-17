@@ -48,10 +48,16 @@ class SecurityTestViewSet(viewsets.ModelViewSet):
         if not security_test.completion_date:
             security_test.completion_date = datetime.datetime.now().date()
             security_test.save()
+
             if security_test.review and security_test.review.jira_issue:
                 services.jira.transition_jira_issue(
                     security_test.review.jira_issue,
                     models.JiraTransition.GarrettActions.COMPLETE_TEST)
+
+            for service in security_test.services.all():
+                if service.confluence_parent_id and service.confluence_space:
+                    services.confluence.write_page(security_test, service.confluence_space,
+                                                   service.confluence_parent_id)
 
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(security_test)
