@@ -1,4 +1,3 @@
-
 import api.models as models
 
 # TODO -Error control. If the page exists, it's not replaced.
@@ -42,10 +41,12 @@ def security_test_to_html(security_test):
 
     test_cases = models.TestCase.objects.filter(
         security_test=security_test.oid).order_by('requirement__readable_id')
+    test_cases_sorted = sorted(
+        test_cases, key=lambda x: [int(i) for i in x.requirement.readable_id[1:].split('.')])
     res_html += ('<h2>Test cases</h2>')
     res_html += (
         '<table><thead><tr><td>Requirement</td><td>Status</td><td>Description</td></tr></thead>')
-    for test_case in test_cases:
+    for test_case in test_cases_sorted:
         res_html += test_case_to_html(test_case)
     res_html += ('</table>')
 
