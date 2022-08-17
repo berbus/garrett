@@ -12,6 +12,9 @@ class Service(models.Model):
         THREAT_MODEL = 'THREAT MODEL'
         TESTING = 'TESTING'
 
+    class Meta:
+        unique_together = ('confluence_parent_id', 'confluence_space')
+
     oid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=64, unique=True)
     creation_date = models.DateField(default=datetime.date.today)
