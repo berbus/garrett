@@ -54,10 +54,7 @@ class SecurityTestViewSet(viewsets.ModelViewSet):
                     security_test.review.jira_issue,
                     models.JiraTransition.GarrettActions.COMPLETE_TEST)
 
-            for service in security_test.services.all():
-                if service.confluence_parent_id and service.confluence_space:
-                    services.confluence.write_page(security_test, service.confluence_space,
-                                                   service.confluence_parent_id)
+            services.confluence.write_results(security_test)
 
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(security_test)
