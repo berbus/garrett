@@ -1,56 +1,48 @@
-import requests
 
 import api.models as models
 
 # TODO -Error control. If the page exists, it's not replaced.
 # Format reference: https://confluence.atlassian.com/doc/confluence-storage-format-790796544.html
 
-CONFLUENCE_URL = 'https://adelrio.atlassian.net/wiki/rest/api/content'
+
+def prepare_confluence_data(elem):
+    if type(elem) is models.SecurityTest:
+        return get_data_for_security_test(elem)
+    else:
+        raise NotImplementedError('nope')
 
 
-def get_api_key():
-    return open('/Users/albertodelrio/Documents/garrett/atlassian_api_token.txt').read().strip()
-
-
-def get_auth_data():
-    return ('aldelrio@protonmail.com', get_api_key())
-
-
-def write_confluence_page(review, space_id, parent_page_id):
-    html = review_to_html(review)
-    headers = {'content-type': 'application/json'}
-    auth = get_auth_data()
+def get_data_for_security_test(security_test):
     data = {
         'type': 'page',
-        'title': review.title,
-        'ancestors': [{'id': parent_page_id}],
-        'space': {
-            'key': space_id,
-        },
+        'title': security_test.title,
+        'ancestors': [],
+        'space': {},
         'body': {
             'storage': {
-                'value': review_to_html(review),
+                'value': security_test_to_html(security_test),
                 'representation': 'storage'
             }
         }
     }
 
-    _ = requests.post(CONFLUENCE_URL, auth=auth, json=data, headers=headers)
+    return data
 
 
-def review_to_html(review):
+def security_test_to_html(security_test):
     res_html = ''
-    res_html += (f'<h1>{review.title}</h1>')
+    res_html += (f'<h1>{security_test.title}</h1>')
 
-    findings = models.Finding.objects.filter(review=review.oid).order_by('creation_date')
+    findings = models.Finding.objects.filter(
+        security_test=security_test.oid).order_by('creation_date')
     if findings:
-        res_html += (f'<h2>Findings</h2>')
+        res_html += ('<h2>Findings</h2>')
         for idx, finding in enumerate(findings):
             res_html += finding_to_html(finding, idx)
 
     test_cases = models.TestCase.objects.filter(
-        review=review.oid).order_by('requirement__readable_id')
-    res_html += (f'<h2>Test cases</h2>')
+        security_test=security_test.oid).order_by('requirement__readable_id')
+    res_html += ('<h2>Test cases</h2>')
     res_html += (
         '<table><thead><tr><td>Requirement</td><td>Status</td><td>Description</td></tr></thead>')
     for test_case in test_cases:
