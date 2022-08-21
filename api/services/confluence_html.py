@@ -4,33 +4,16 @@ import api.models as models
 # Format reference: https://confluence.atlassian.com/doc/confluence-storage-format-790796544.html
 
 
-def prepare_confluence_data(elem, service_name):
+def get_html_for_elem(elem):
     html = ''
-    title = ''
-
     if type(elem) is models.SecurityTest:
-        title = f'Security Test for {service_name} - {elem.title}'
         html = security_test_to_html(elem)
     elif type(elem) is models.ThreatModel:
-        title = f'Threat Model for {service_name} - {elem.title}'
         html = threat_model_to_html(elem)
     else:
-        raise NotImplementedError('nope')
+        raise NotImplementedError()
 
-    data = {
-        'type': 'page',
-        'title': title,
-        'ancestors': [],
-        'space': {},
-        'body': {
-            'storage': {
-                'value': html,
-                'representation': 'storage'
-            }
-        }
-    }
-
-    return data
+    return html
 
 
 def get_common_sections_html():
