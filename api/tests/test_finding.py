@@ -16,8 +16,8 @@ class BasicFindingTestCase(APITestCase):
         aux_template = models.Template.objects.first()
         aux_requirement = models.Requirement.objects.first()
         self.review = models.Review(title='Test review',
-                                        service=self.service,
-                                        template=aux_template)
+                                    service=self.service,
+                                    template=aux_template)
         self.review.save()
         self.test_case = models.TestCase(review=self.review, requirement=aux_requirement)
         self.test_case.save()

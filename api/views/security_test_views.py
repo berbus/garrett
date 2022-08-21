@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.renderers import StaticHTMLRenderer
 
 import api.models as models
 import api.serializers as serializers
@@ -59,3 +60,9 @@ class SecurityTestViewSet(viewsets.ModelViewSet):
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(security_test)
         return Response(serializer.data)
+
+    @action(methods=['GET'], detail=True, renderer_classes=[StaticHTMLRenderer])
+    def html_report(self, request, pk=None):
+        security_test = self.get_object()
+        html = services.confluence.get_html_report(security_test)
+        return Response(html)
