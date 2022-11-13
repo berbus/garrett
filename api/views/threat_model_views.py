@@ -49,7 +49,7 @@ class ThreatModelViewSet(viewsets.ModelViewSet):
                     threat_model.review.jira_issue,
                     models.JiraTransition.GarrettActions.COMPLETE_THREAT_MODEL)
 
-            services.confluence.write_results(threat_model)
+            services.confluence.write_results(request.user.email, threat_model)
 
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(threat_model)

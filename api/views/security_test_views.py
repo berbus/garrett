@@ -55,7 +55,7 @@ class SecurityTestViewSet(viewsets.ModelViewSet):
                     security_test.review.jira_issue,
                     models.JiraTransition.GarrettActions.COMPLETE_TEST)
 
-            services.confluence.write_results(security_test)
+            services.confluence.write_results(request.user.email, security_test)
 
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(security_test)

@@ -4,14 +4,13 @@ import requests
 
 import api.models as models
 from .confluence_html import get_html_for_elem
+import api.services as services
+
+CLOUD_ID = os.getenv('JIRA_CLOUD_ID')
+BASE_URL = f'https://api.atlassian.com/ex/confluence/{CLOUD_ID}'
 
 
 class ConfluenceWrapper(object):
-    SITE = os.getenv('ATLASSIAN_SITE')
-    TOKEN = os.getenv('ATLASSIAN_API_TOKEN')
-
-    def __init__(self):
-        self.auth_data = ('aldelrio@protonmail.com', self.TOKEN)
 
     def get_html_report(self, elem):
         html = ''
@@ -20,20 +19,25 @@ class ConfluenceWrapper(object):
             html = get_html_for_elem(elem)
         return html
 
-    def write_results(self, elem):
+    def write_results(self, email, elem):
+        ''' OAuth scope - write:confluence-content '''
         ep = '/wiki/rest/api/content'
-        for service in elem.services.all():
-            if service.confluence_parent_id and service.confluence_space:
-                html = get_html_for_elem(elem)
-                title = self.get_title(elem, service.name)
-                confluence_json = self.get_confluence_json(title, html, service.confluence_space,
-                                                           service.confluence_parent_id)
-                self._do_request(ep, confluence_json)
+        token = services.jira_auth.get_token(email)
 
-    def _do_request(self, ep, data):
-        headers = {'content-type': 'application/json'}
-        url = f'{self.SITE}{ep}'
-        r = requests.post(url, auth=self.auth_data, json=data, headers=headers)
+        if token:
+            for service in elem.services.all():
+                if service.confluence_parent_id and service.confluence_space:
+                    html = get_html_for_elem(elem)
+                    title = self.get_title(elem, service.name)
+                    confluence_json = self.get_confluence_json(title, html,
+                                                               service.confluence_space,
+                                                               service.confluence_parent_id)
+                    self._do_request(ep, token, confluence_json)
+
+    def _do_request(self, ep, token, data):
+        headers = {'content-type': 'application/json', 'authorization': f'Bearer {token}'}
+        url = f'{BASE_URL}{ep}'
+        r = requests.post(url, json=data, headers=headers)
         r.raise_for_status()
 
     def get_title(self, elem, service_name):
