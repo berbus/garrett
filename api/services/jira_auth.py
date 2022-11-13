@@ -7,6 +7,9 @@ import time
 CLIENT_ID = os.getenv('JIRA_CLIENT_ID')
 CLIENT_SECRET = os.getenv('JIRA_CLIENT_SECRET')
 
+confluence_scope = 'write:confluence-content'
+jira_scope = 'read:jira-work read:jira-user write:jira-work'
+
 
 class JiraCreds(object):
 
@@ -32,11 +35,10 @@ class JiraAuth(object):
         logging.info(f'Returning authorization URL for {email}')
         user_secret = random.randbytes(50).hex()
         self.creds[email] = JiraCreds(user_secret)
+        scope = f'offline_access {confluence_scope} {jira_scope}'
         return ('https://auth.atlassian.com/authorize?audience=api.atlassian.com'
                 f'&client_id={CLIENT_ID}'
-                '&scope=offline_access%20read%3Ajira-work%20read%3A'
-                'jira-user%20write%3Ajira-work%20manage%3Ajira-project%20manage%3A'
-                'jira-configuration%20manage%3Ajira-webhook%20manage%3Ajira-data-provider'
+                f'&scope={scope}'
                 f'&redirect_uri=https%3A%2F%2Flocalhost%3A8000%2Fapi%2Fjira_auth%2Fauthorize%2F'
                 f'&state={user_secret}&response_type=code&prompt=consent')
 
@@ -107,3 +109,6 @@ class JiraAuth(object):
                 del self.creds[email]
         logging.info(f'User {email} authenticated: {res}')
         return res
+
+    def get_token(self, email):
+        return self.creds[email].token if self.user_authenticated(email) else None
