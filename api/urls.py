@@ -21,7 +21,7 @@ router.register(r'template', views.TemplateViewSet)
 router.register(r'test_case', views.TestCaseViewSet)
 router.register(r'user', views.UserViewSet)
 router.register(r'threat_model', views.ThreatModelViewSet)
-router.register(r'jira_auth', views.JiraAuthViewSet)
+router.register(r'jira_auth', views.JiraAuthViewSet, basename='')
 
 urlpatterns = [
     path('', include(router.urls))
