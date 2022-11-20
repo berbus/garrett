@@ -6,7 +6,7 @@ import api.models as models
 from .confluence_html import get_html_for_elem
 import api.services as services
 
-CLOUD_ID = os.getenv('JIRA_CLOUD_ID')
+CLOUD_ID = os.getenv('CONDLUENCE_CLOUD_ID')
 BASE_URL = f'https://api.atlassian.com/ex/confluence/{CLOUD_ID}'
 
 

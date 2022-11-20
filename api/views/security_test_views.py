@@ -33,8 +33,9 @@ class SecurityTestViewSet(viewsets.ModelViewSet):
         security_test = serializer.save()
 
         if security_test.review and security_test.review.jira_issue:
-            services.jira.transition_jira_issue(security_test.review.jira_issue,
-                                                models.JiraTransition.GarrettActions.CREATE_TEST)
+            services.jira.transition_issue(self.request.user.email,
+                                           security_test.review.jira_issue,
+                                           models.JiraTransition.GarrettActions.CREATE_TEST)
 
         for req in template.requirements.all():
             tc = models.TestCase(security_test=security_test, requirement=req)
@@ -51,9 +52,9 @@ class SecurityTestViewSet(viewsets.ModelViewSet):
             security_test.save()
 
             if security_test.review and security_test.review.jira_issue:
-                services.jira.transition_jira_issue(
-                    security_test.review.jira_issue,
-                    models.JiraTransition.GarrettActions.COMPLETE_TEST)
+                services.jira.transition_issue(self.request.user.email,
+                                               security_test.review.jira_issue,
+                                               models.JiraTransition.GarrettActions.COMPLETE_TEST)
 
             services.confluence.write_results(request.user.email, security_test)
 

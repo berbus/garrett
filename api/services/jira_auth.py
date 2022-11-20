@@ -4,11 +4,13 @@ import random
 import requests
 import time
 
-CLIENT_ID = os.getenv('JIRA_CLIENT_ID')
-CLIENT_SECRET = os.getenv('JIRA_CLIENT_SECRET')
+CLIENT_ID = os.getenv('ATLASSIAN_CLIENT_ID')
+CLIENT_SECRET = os.getenv('ATLASSIAN_CLIENT_SECRET')
+GARRETT_URL = os.getenv('GARRETT_URL')
 
 confluence_scope = 'write:confluence-content'
-jira_scope = 'read:jira-work read:jira-user write:jira-work'
+jira_scope = ('read:jira-work write:jira-work read:jira-user '
+              'manage:jira-configuration')
 
 
 class JiraCreds(object):
@@ -21,7 +23,6 @@ class JiraCreds(object):
         self.refresh_token_expires = -1
 
     def update_token(self, access_token, expires_in, refresh_token):
-        print(f'TOKEN: {access_token}')
         self.refresh_token = refresh_token
         self.token = access_token
         self.token_expires = expires_in + int(time.time()) - 1
@@ -39,7 +40,7 @@ class JiraAuth(object):
         return ('https://auth.atlassian.com/authorize?audience=api.atlassian.com'
                 f'&client_id={CLIENT_ID}'
                 f'&scope={scope}'
-                f'&redirect_uri=https%3A%2F%2Flocalhost%3A8000%2Fapi%2Fjira_auth%2Fauthorize%2F'
+                f'&redirect_uri={GARRETT_URL}/api/jira_auth/authorize/'
                 f'&state={user_secret}&response_type=code&prompt=consent')
 
     def get_email_from_secret(self, user_secret):
@@ -53,16 +54,20 @@ class JiraAuth(object):
         return res
 
     def exchange_code_for_token(self, email, auth_code, user_secret):
+        logging.info(f'Exchanging code for token: {email}')
         res = False
+        server_secret = self.creds[email].secret
         self.creds[email].secret = None
-        logging.info('Exchanging code for token: {email}')
+
+        if server_secret != user_secret:
+            raise Exception('Invalid secret code')
 
         json_data = {
             'grant_type': 'authorization_code',
             'client_id': CLIENT_ID,
             'client_secret': CLIENT_SECRET,
             'code': auth_code,
-            'redirect_uri': 'https://localhost:8000/api/jira_auth/ok',
+            'redirect_uri': 'https://localhost:8000/',
         }
         r = requests.post('https://auth.atlassian.com/oauth/token', json=json_data)
         if r.status_code == 200:
@@ -94,18 +99,17 @@ class JiraAuth(object):
         token = self.creds[email].token
         headers = {'Authorization': f'Bearer {token}', 'Accept': 'application/json'}
         url = f'https://api.atlassian.com/{test_endpoint}'
-        return requests.get(url, headers=headers).status_code == 200
+        r = requests.get(url, headers=headers)
+        logging.info(f'Test request for {email}: {r}')
+        return r.status_code == 200
 
     def user_authenticated(self, email):
         res = False
         if email in self.creds:
-            if self.do_test_request(email):
-                res = True
-            else:
-                self.refresh_token(email)
-                res = self.do_test_request(email)
-
+            res = self.do_test_request(email)
             if not res:
+                res = self.refresh_token(email)
+            if not res and self.creds[email] is None:
                 del self.creds[email]
         logging.info(f'User {email} authenticated: {res}')
         return res

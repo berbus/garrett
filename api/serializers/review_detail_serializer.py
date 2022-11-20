@@ -59,8 +59,7 @@ class ReviewDetailSerializer(serializers.ModelSerializer):
         res = None
         if review.jira_issue:
             res = {
-                'oid': review.jira_issue.oid,
-                'jira_id': review.jira_issue.jira_id,
+                'jira_id': review.jira_issue.jira_key,
                 'url': services.jira.get_url_for_issue(review.jira_issue)
             }
         return res
