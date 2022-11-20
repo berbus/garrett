@@ -25,4 +25,4 @@ class JiraTransitionViewSet(viewsets.ModelViewSet):
 
     @action(methods=['GET'], detail=False)
     def statuses(self, request):
-        return Response(services.jira.get_jira_statuses())
+        return Response(services.jira.get_jira_statuses(request.user.email))

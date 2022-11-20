@@ -11,3 +11,4 @@ from .test_case_views import TestCaseViewSet
 from .threat_model_views import ThreatModelViewSet
 from .user_views import UserDetailView
 from .user_views import UserViewSet
+from .jira_auth_views import JiraAuthViewSet

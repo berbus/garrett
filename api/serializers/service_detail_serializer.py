@@ -23,9 +23,8 @@ class ServiceDetailSerializer(serializers.ModelSerializer):
             }
             if review.jira_issue:
                 review_data['jira_issue'] = {
-                    'oid': review.jira_issue.oid,
-                    'jira_id': review.jira_issue.jira_id,
-                    'status': review.jira_issue.status
+                    'jira_key': review.jira_issue.jira_key,
+                    'jira_id': review.jira_issue.jira_id
                 }
             res.append(review_data)
 
