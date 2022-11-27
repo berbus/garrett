@@ -1,10 +1,13 @@
+import uuid
+
 from django.db import models
 from .service import Service
 
 
 class JiraIssue(models.Model):
-    jira_id = models.CharField(primary_key=True, max_length=64)
-    jira_key = models.CharField(max_length=64, unique=True)
+    oid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    jira_id = models.CharField(max_length=64)
+    jira_key = models.CharField(max_length=64, unique=True, null=False)
     services = models.ManyToManyField(Service, related_name='jira_issues')
 
     def __repr__(self):
