@@ -19,6 +19,7 @@ class ThreatModelViewSet(viewsets.ModelViewSet):
         permission_classes = self.permission_classes
         if self.action in ('list', 'retrieve'):
             permission_classes = (IsAuthenticated, )
+        permission_classes = tuple()    # TODO
         return [permission() for permission in permission_classes]
 
     def get_serializer_class(self):

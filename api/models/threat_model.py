@@ -3,8 +3,8 @@ import uuid
 
 from django.db import models
 
-from .service import Service
 from .review import Review
+from .service import Service
 
 
 class ThreatModel(models.Model):
@@ -12,6 +12,10 @@ class ThreatModel(models.Model):
     title = models.CharField(max_length=200, unique=True)
     creation_date = models.DateField(default=datetime.date.today)
     completion_date = models.DateField(default=None, null=True)
+
+    summary = models.TextField(default='', blank=True)
+    business_logic_text = models.TextField(default='', blank=True)
+    boundaries_text = models.TextField(default='', blank=True)
 
     services = models.ManyToManyField(Service, blank=True)
     review = models.ForeignKey(Review, on_delete=models.CASCADE, null=True)

@@ -14,4 +14,5 @@ from .threat_model_serializer import ThreatModelSerializer
 from .service_serializer import ServiceSerializer
 from .template_serializer import TemplateSerializer
 from .test_case_serializer import TestCaseSerializer
+from .tm_participant_serializer import TMParticipantSerializer
 from .user_serializer import UserSerializer

@@ -9,3 +9,4 @@ from .security_test import SecurityTest
 from .threat_model import ThreatModel
 from .template import Template
 from .test_case import TestCase
+from .tm_participant import TMParticipant
